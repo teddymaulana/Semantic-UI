@@ -22,6 +22,13 @@
   padding: 0em;
 }
 
+/* Item Wrap */
+.ui.accordion .item {
+  margin-bottom: 20px;
+  padding:20px;
+  border: solid 1px #d4dbea;
+}
+
 /* Title */
 .ui.accordion .title,
 .ui.accordion .accordion .title {

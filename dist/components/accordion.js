@@ -57,6 +57,7 @@ $.fn.accordion = function(parameters) {
         $module  = $(this),
         $title   = $module.find(selector.title),
         $content = $module.find(selector.content),
+        $wrap    = $module.find(selector.wrap),
 
         element  = this,
         instance = $module.data(moduleNamespace),
@@ -132,6 +133,7 @@ $.fn.accordion = function(parameters) {
                 : $(query).closest(selector.title)
               : $(this).closest(selector.title),
             $activeContent = $activeTitle.next($content),
+            $activeWrap = $activeTitle.parent($wrap),
             isAnimating = $activeContent.hasClass(className.animating),
             isActive    = $activeContent.hasClass(className.active),
             isOpen      = (isActive && !isAnimating),
@@ -159,6 +161,7 @@ $.fn.accordion = function(parameters) {
                 : $(query).closest(selector.title)
               : $(this).closest(selector.title),
             $activeContent = $activeTitle.next($content),
+            $activeWrap = $activeTitle.parent($wrap),
             isAnimating = $activeContent.hasClass(className.animating),
             isActive    = $activeContent.hasClass(className.active),
             isOpen      = (isActive || isAnimating)
@@ -174,6 +177,9 @@ $.fn.accordion = function(parameters) {
           }
           $activeTitle
             .addClass(className.active)
+          ;
+          $activeWrap
+            .addClass(className.activeWrap)
           ;
           $activeContent
             .stop(true, true)
@@ -210,7 +216,8 @@ $.fn.accordion = function(parameters) {
                 .addClass(className.active)
               ;
               module.reset.display.call(this);
-              settings.onOpen.call(this);
+              console.log(this)
+              //settings.onOpen.call(this);
               settings.onChange.call(this);
             })
           ;
@@ -224,6 +231,7 @@ $.fn.accordion = function(parameters) {
                 : $(query).closest(selector.title)
               : $(this).closest(selector.title),
             $activeContent = $activeTitle.next($content),
+            $activeWrap = $activeTitle.parent($wrap),
             isAnimating    = $activeContent.hasClass(className.animating),
             isActive       = $activeContent.hasClass(className.active),
             isOpening      = (!isActive && isAnimating),
@@ -234,6 +242,9 @@ $.fn.accordion = function(parameters) {
             settings.onClosing.call($activeContent);
             $activeTitle
               .removeClass(className.active)
+            ;
+            $activeWrap
+              .removeClass(className.activeWrap)
             ;
             $activeContent
               .stop(true, true)
@@ -288,17 +299,20 @@ $.fn.accordion = function(parameters) {
             activeContent    = selector.content + '.' + className.active + ':visible',
             $openTitles,
             $nestedTitles,
-            $openContents
+            $openContents,
+            $openWraps
           ;
           if(settings.closeNested) {
             $openTitles   = $activeAccordion.find(activeSelector).not($parentTitles);
             $openContents = $openTitles.next($content);
+            $openWraps    = $openWraps.parent($wrap);
           }
           else {
             $openTitles   = $activeAccordion.find(activeSelector).not($parentTitles);
             $nestedTitles = $activeAccordion.find(activeContent).find(activeSelector).not($parentTitles);
             $openTitles   = $openTitles.not($nestedTitles);
             $openContents = $openTitles.next($content);
+            $openWraps    = $openTitles.parent($wrap);
           }
           if( ($openTitles.length > 0) ) {
             module.debug('Exclusive enabled, closing other content', $openTitles);
@@ -309,6 +323,9 @@ $.fn.accordion = function(parameters) {
               .removeClass(className.animating)
               .stop(true, true)
             ;
+            $openWraps
+              .removeClass(className.activeWrap)
+            ;  
             if(settings.animateChildren) {
               if($.fn.transition !== undefined && $module.transition('is supported')) {
                 $openContents
@@ -587,11 +604,13 @@ $.fn.accordion.settings = {
 
   className   : {
     active    : 'active',
+    activeWrap    : 'activeWrap',
     animating : 'animating'
   },
 
   selector    : {
     accordion : '.accordion',
+    wrap      : '.item',
     title     : '.title',
     trigger   : '.title',
     content   : '.content'
